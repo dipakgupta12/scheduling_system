@@ -28,9 +28,9 @@ class ScheduleMettingType(DjangoObjectType):
 
 class Query(UserQuery, MeQuery, graphene.ObjectType):
     all_schedule_meeting = graphene.List(ScheduleMettingType)
-    schedule_meeting = graphene.Field(ScheduleMettingType, username=graphene.String())
+    schedule_meeting = graphene.Field(ScheduleMettingType, id=graphene.ID())
     all_scheduling_meeting_of_owner = graphene.List(ScheduleMettingType)
-    all_scheduling_meeting_of_user = graphene.List(ScheduleMettingType, meeting_creator=graphene.ID())
+    all_scheduling_meeting_of_user = graphene.List(ScheduleMettingType, meeting_creator=graphene.String())
 
     def resolve_all_schedule_meeting(self, info, **kwargs):
         return ScheduleMetting.objects.all().order_by('-id')
@@ -56,6 +56,11 @@ class CreateMeeting(graphene.Mutation):
         to_meeting_date_time = from_meeting_date_time + datetime.timedelta(
             minutes=int(meeting_time_interval.split(" ")[0])
         )
+        meeting = ScheduleMetting.objects.filter(meeting_creator__id=get_request().user.id, from_meeting_date_time__lte=to_meeting_date_time,
+                                       to_meeting_date_time__gte=from_meeting_date_time)
+        if meeting:
+            return
+
         meeting = ScheduleMetting.objects.create(
             from_meeting_date_time=from_meeting_date_time,
             to_meeting_date_time=to_meeting_date_time,
@@ -105,6 +110,10 @@ class UpdateMeeting(graphene.Mutation):
             to_meeting_date_time = from_meeting_date_time + datetime.timedelta(
                 minutes=int(meeting_time_interval.split(" ")[0])
             )
+            meeting_exists = ScheduleMetting.objects.filter(meeting_creator__id=get_request().user.id, from_meeting_date_time__lte=to_meeting_date_time,
+                                                     to_meeting_date_time__gte=from_meeting_date_time)
+            if meeting_exists:
+                return
             meeting.to_meeting_date_time = to_meeting_date_time
 
         if user_name and user_email:

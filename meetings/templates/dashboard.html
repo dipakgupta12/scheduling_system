@@ -33,12 +33,8 @@
             <li {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }}) </li>
             {% endfor %}
         </ul>
-        {% else %}
-        <ul>
-            <li>{{request.user.username}}</li>
-            {% endif %}
-        </ul>
-    </div>`
+         {% endif %}
+     </div>`
 </div>
 <div id="target" class="row">
     <!-- all divs will append here -->
@@ -121,7 +117,7 @@
 
         </div>
         <div>
-            <button type="button" style="padding:5px;" onclick="CloseMeeting()" class="cancelbtn">Cancel</button>
+            <button type="button" style="padding:5px;" onclick="CloseUpdateMeeting()" class="cancelbtn">Cancel</button>
         </div>
     </form>
 </div>
@@ -131,6 +127,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script>
+ var url = "{% url 'meetings:graphql_view' %}";
     function openForm() {
         document.getElementById("myForm").style.display = "block";
     }
@@ -146,8 +143,7 @@
     function CloseMeeting() {
         document.getElementById("CreateMettingForm").style.display = "none";
     }
-</script>
-<script>
+
     var updated_meeting_id = null;
     $(document).ready(function() {
         const query = `query{
@@ -163,7 +159,7 @@
     }
   }
 }`;
-        fetch("http://127.0.0.1:8000/graphql/", {
+        fetch(url, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -214,7 +210,7 @@
         }
       }
     }`;
-        fetch("http://127.0.0.1:8000/graphql/", {
+        fetch(url, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
@@ -276,7 +272,7 @@
             }
           }
       }`;
-        fetch("http://127.0.0.1:8000/graphql/", {
+        fetch(url, {
                 method: 'POST',
                 headers: {
                     "Content-Type": 'application/json',
@@ -301,12 +297,10 @@
             })
     }
 
-    function CloseMeeting() {
-        document.getElementById("CreateMettingForm").style.display = "none";
+    function CloseUpdateMeeting() {
+        document.getElementById("UpdateMettingForm").style.display = "none";
     }
-</script>
 
-<script>
     function CreateMeetingFunction() {
         const query = `
      mutation ($fromMeetingDateTime: DateTime!, $meetingTimeInterval: String!){
@@ -322,7 +316,7 @@
         }
       }
       }`
-        fetch("http://127.0.0.1:8000/graphql/", {
+        fetch(url, {
                 method: 'POST',
                 headers: {
                     "Content-Type": 'application/json',
@@ -339,11 +333,19 @@
             })
             .then(response => {
                 if (!response.ok) {}
-                alert("Meeting Created Successfully")
-                location.reload();
+                return response.json();
             })
             .then(result => {
-                console.log(result)
+            debugger;
+            if (result.data.createMeeting === null)
+            {
+            alert("You can not create meeting on this time")
+            location.reload();
+            }
+            else{
+                alert("Meeting Created Successfully")
+                location.reload();
+                }
             })
     }
 </script>
