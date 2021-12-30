@@ -3,7 +3,7 @@ from core.models import User
 from meetings.middleware import get_request
 
 
-class ScheduleMetting(models.Model):
+class ScheduleMeeting(models.Model):
     METTTING_TIME_INTERVAL = (('15 MIN','15 MIN'), ('30 MIN', '30 MIN'), ('45 MIN','45 MIN'))
 
     meeting_creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)

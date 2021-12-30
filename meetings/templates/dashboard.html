@@ -11,7 +11,7 @@
     <div class="col-sm-2" style="padding-top:25px;">
         {% if request.user.is_authenticated %}
         <a id="my_meetings" type="button" class="btn btn-primary" href="{% url 'meetings:my_meeting_view' %}"> My meetings</a>
-        {% endif %}
+          {% endif %}
     </div>
     <div class="col-sm-6"></div>
     <div class="col-sm-1" style="padding-top:25px;">
@@ -82,6 +82,7 @@
         </div>
     </form>
 </div>
+
 <div style="display:none;" id="scheduling_table">
     <table class="table table-dark" id="my_table">
         <thead>
